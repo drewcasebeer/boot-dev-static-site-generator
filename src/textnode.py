@@ -1,8 +1,10 @@
 from enum import Enum
 
+from leafnode import LeafNode
+
 
 class TextType(Enum):
-    PLAIN = "plain"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
@@ -15,6 +17,25 @@ class TextNode:
         self.text = text
         self.text_type = text_type
         self.url = url
+
+    def convert_to_html_node(self):
+        match self.text_type:
+            case TextType.TEXT:
+                return LeafNode(None, self.text)
+            case TextType.BOLD:
+                return LeafNode("b", self.text)
+            case TextType.ITALIC:
+                return LeafNode("i", self.text)
+            case TextType.CODE:
+                return LeafNode("code", self.text)
+            case TextType.LINK:
+                return LeafNode(
+                    "a", self.text, {"href": self.url, "target": "_blank"}
+                )
+            case TextType.IMAGE:
+                return LeafNode("img", "", {"src": self.url, "alt": self.text})
+
+        raise NotImplementedError("Other types have not been implemented yet")
 
     def __eq__(self, other):
         return (
